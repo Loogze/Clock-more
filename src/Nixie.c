@@ -2,7 +2,7 @@
 // Created by loogze on 2026/2/19.
 //
 
-#include "Nixie.h"
+#include "../include/Nixie.h"
 
 inline void seg_display(const int first, const int second,
                         const int third, const int forth ,

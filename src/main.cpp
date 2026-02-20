@@ -7,7 +7,7 @@
 #include <TimeLib.h>
 
 #include "Nixie.h"
-#include "timing.h"
+#include "../include/timing.h"
 
 U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 Adafruit_BMP280 bmp;
