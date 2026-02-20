@@ -11,44 +11,54 @@
 #define FONT u8g2_font_wqy12_t_chinese2
 #define ON_BOARD_LED 48
 
-constexpr auto ssid = "TP-link_A67A";
+constexpr auto ssid = "TP-LINK_A67A";
 constexpr auto passwd = "0852wppu,.";
+constexpr auto rxPin = 16;
+constexpr auto txPin = 17;
 
 inline void Init_System() {
     Serial.begin(9600);
+    Serial2.begin(9600,SERIAL_8N1,rxPin,txPin);
     pinMode(ON_BOARD_LED,OUTPUT);
+    Serial2.println("Sys OK");
 }
 
 inline void Init_Senser() {
-    if (bmp.begin()) {
-        Serial.printf("Fail to start BMP20");
+    if (!bmp.begin()) {
+        Serial2.printf("Fail to start BMP20");
     }
     if (! aht.begin()) {
-        Serial.println("Could not find AHT? Check wiring");
+        Serial2.println("Could not find AHT? Check wiring");
     }
     bmp.setSampling(Adafruit_BMP280::MODE_NORMAL, /* Operating Mode. */
                     Adafruit_BMP280::SAMPLING_X2, /* Temp. oversampling */
                     Adafruit_BMP280::SAMPLING_X16, /* Pressure oversampling */
                     Adafruit_BMP280::FILTER_X16, /* Filtering. */
                     Adafruit_BMP280::STANDBY_MS_500);
+    Serial2.println("Senser OK");
 }
 
 inline void Init_Wifi() {
     WiFiClass::mode(WIFI_STA);
     WiFi.begin(ssid, passwd);
-    Serial.printf("Connecting");
+    Serial2.printf("Connecting");
     while (WiFiClass::status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
+        delay(150);
+        digitalWrite(ON_BOARD_LED,HIGH);
+        delay(150);
+        digitalWrite(ON_BOARD_LED,LOW);
     }
-    Serial.println("WiFi connected.");
-    Serial.println(WiFi.localIP());
+    Serial2.println("");
+    Serial2.print("WiFi connected IP:");
+    Serial2.print(WiFi.localIP());
+    Serial2.println("");
 }
 
 inline void Init_Display() {
     u8g2.begin();
     u8g2.enableUTF8Print();
     u8g2.setFont(FONT);
+    Serial2.println("U8G2 OK");
 }
 
 inline void Init_Time() {
@@ -64,5 +74,6 @@ inline void Init_Time() {
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
     ESP_LOGI(TAG, "The current date/time in Shanghai is: %s", strftime_buf);  //时间的分辨率为 1S
+    Serial2.println("Time OK");
 }
 #endif //UNTITLED_INIT_H
