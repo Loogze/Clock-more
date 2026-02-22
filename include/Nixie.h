@@ -1,5 +1,5 @@
 //
-// Created by wppuq on 2026/2/19.
+// Created by Loogze on 2026/2/19.
 //
 
 #ifndef UNTITLED_TIMEDISPLAY_H

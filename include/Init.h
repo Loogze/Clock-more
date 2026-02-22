@@ -5,15 +5,30 @@
 #ifndef UNTITLED_INIT_H
 #define UNTITLED_INIT_H
 
+#include <Adafruit_BMP280.h>
+#include <Adafruit_AHTX0.h>
+#include <U8g2lib.h>
+#include <WiFi.h>
+#include <Wire.h>
+
+
 #define NTP1  "ntp1.aliyun.com"
 #define NTP2  "ntp2.aliyun.com"
 #define NTP3  "ntp3.aliyun.com"
 #define ON_BOARD_LED 48
 
-const char ssid[] = "TP-LINK_A67A";
-const char passwd[] = "0852wppu,.";
-const int rxPin = 16;
-const int txPin = 17;
+constexpr char ssid[] = "TP-LINK_A67A";
+constexpr char passwd[] = "0852wppu,.";
+constexpr int rxPin = 16;
+constexpr int txPin = 17;
+
+U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
+Adafruit_BMP280 bmp;
+Adafruit_AHTX0 aht;
+sensors_event_t humidity, temp;
+
+volatile float Temperature = 0.0;
+volatile double Pressure = 0.0;
 
 inline void Init_System() {
     Serial.begin(9600);
@@ -48,12 +63,17 @@ inline void Init_Senser() {
                     Adafruit_BMP280::SAMPLING_X16, /* Pressure oversampling */
                     Adafruit_BMP280::FILTER_X16, /* Filtering. */
                     Adafruit_BMP280::STANDBY_MS_500);
+    Temperature = bmp.readTemperature();
+    Pressure = bmp.readPressure() / 1000.0; // 默认千帕
+    Serial2.printf("Temp is: %.2f *C  Pressure is: %.2f kPa",Temperature,Pressure);
+    Serial2.println();
+    Serial2.println("Senser OK");
+
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_wqy12_t_gb2312);
     u8g2.setCursor(24,20);
     u8g2.println("传感器初始化完成");
     u8g2.sendBuffer();
-    Serial2.println("Senser OK");
 }
 
 inline void Init_Wifi() {
@@ -61,7 +81,6 @@ inline void Init_Wifi() {
     WiFi.begin(ssid, passwd);
     Serial2.printf("WIFI %s Connecting",ssid);
     while (WiFiClass::status() != WL_CONNECTED) {
-        static unsigned long current = millis();
         static unsigned long now = 0;
         if (millis() - now >= 300) {
             digitalWrite(ON_BOARD_LED,!digitalRead(ON_BOARD_LED));
@@ -90,4 +109,6 @@ inline void Init_Display() {
     u8g2.sendBuffer();
     Serial2.println("U8G2 OK");
 }
+
+
 #endif //UNTITLED_INIT_H
