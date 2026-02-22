@@ -36,9 +36,7 @@ inline tm Init_Time() {
 
 inline tm updateClock() {
     struct tm timeinfo{};
-    if (getLocalTime(&timeinfo)) {
-        Serial2.println(&timeinfo, "Time is: %F %T %A");
-    } else {
+    if (!getLocalTime(&timeinfo)) {
         Serial2.println("Failed to get time from NTP");
     }
     return timeinfo;

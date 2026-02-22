@@ -10,15 +10,14 @@
 #include <U8g2lib.h>
 #include <WiFi.h>
 #include <Wire.h>
-
+#include "parvite.h"
 
 #define NTP1  "ntp1.aliyun.com"
 #define NTP2  "ntp2.aliyun.com"
 #define NTP3  "ntp3.aliyun.com"
 #define ON_BOARD_LED 48
 
-constexpr char ssid[] = "TP-LINK_A67A";
-constexpr char passwd[] = "0852wppu,.";
+
 constexpr int rxPin = 16;
 constexpr int txPin = 17;
 
@@ -80,11 +79,13 @@ inline void Init_Wifi() {
     WiFiClass::mode(WIFI_STA);
     WiFi.begin(ssid, passwd);
     Serial2.printf("WIFI %s Connecting",ssid);
+    int counter = 0;
     while (WiFiClass::status() != WL_CONNECTED) {
         static unsigned long now = 0;
         if (millis() - now >= 300) {
             digitalWrite(ON_BOARD_LED,!digitalRead(ON_BOARD_LED));
             now = millis();
+            counter++;
             Serial2.print(".");
         }
         u8g2.clearBuffer();
@@ -92,6 +93,7 @@ inline void Init_Wifi() {
         u8g2.setCursor(24,20);
         u8g2.println("连接WIFI");
         u8g2.sendBuffer();
+        if (counter > 34) break;
     }
     Serial2.println();
     Serial2.printf("WiFi connected. IP:");
