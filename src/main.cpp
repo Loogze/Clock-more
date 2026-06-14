@@ -1,13 +1,10 @@
 #include <Arduino.h>
 #include <TimeLib.h>
 
-#include "Nixie.h"
 #include "timing.h"
 #include "Init.h"
 #include "oled_display.h"
 #include "timer.h"
-
-
 
 void setup() {
     const unsigned long start = millis();
